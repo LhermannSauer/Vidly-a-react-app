@@ -1,24 +1,25 @@
-import React, { Component } from "react";
+import React from "react";
+import Form from "../common/form";
 import Input from "../common/input";
-class LoginForm extends Component {
+import Joi from "joi-browser";
+
+class LoginForm extends Form {
   state = {
-    account: { username: "", password: "" },
+    data: { username: "", password: "" },
   };
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-
-    // call backend and handle information
+  schema = {
+    username: Joi.string().required().label("Username"),
+    password: Joi.string().required().label("Password"),
   };
 
-  handleChange = ({ currentTarget: input }) => {
-    const account = { ...this.state.account };
-    account[input.name] = input.value;
-    this.setState({ account });
+  doSubmit = () => {
+    //Call the server
+    console.log("Submitted");
   };
 
   render() {
-    const { account } = this.state;
+    const { data: account } = this.state;
 
     const inputFields = [
       { name: "username", type: "text", label: "Username" },
@@ -37,7 +38,6 @@ class LoginForm extends Component {
               value={account[field.name]}
               placeholder={`Please enter your ${field.label}`}
               onChange={this.handleChange}
-              small={"We will never share your email"}
             />
           );
         })}
@@ -49,9 +49,8 @@ class LoginForm extends Component {
         </div>
         <button
           type="submit"
-          className="btn btn-primary d-block m-auto w-25 p-3 rounded showDetails
-          
-          "
+          className="btn btn-primary d-block m-auto w-25 p-3 rounded showDetails"
+          disabled={this.validate()}
         >
           Submit
         </button>
