@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import Input from "../common/input";
 class LoginForm extends Component {
   state = {
     account: { username: "", password: "" },
@@ -20,32 +20,27 @@ class LoginForm extends Component {
   render() {
     const { account } = this.state;
 
+    const inputFields = [
+      { name: "username", type: "text", label: "Username" },
+      { name: "password", type: "password", label: "Password" },
+    ];
+
     return (
       <form className="mt-2">
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            value={account.username}
-            name="username"
-            onChange={this.handleChange}
-            type="text"
-            className="form-control"
-            id="username"
-            placeholder="Enter username"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            value={account.password}
-            name="password"
-            onChange={this.handleChange}
-            type="password"
-            className="form-control"
-            id="password"
-            placeholder="Password"
-          />
-        </div>
+        {inputFields.map((field) => {
+          return (
+            <Input
+              name={field.name}
+              type={field.type}
+              label={field.label}
+              id={field.name}
+              value={account[field.name]}
+              placeholder={`Please enter your ${field.label}`}
+              onChange={this.handleChange}
+              small={"We will never share your email"}
+            />
+          );
+        })}
         <div className="form-check">
           <input type="checkbox" className="form-check-input" id="keepLog" />
           <label className="form-check-label" for="keepLog">
