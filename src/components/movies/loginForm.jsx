@@ -1,6 +1,5 @@
 import React from "react";
 import Form from "../common/form";
-import Input from "../common/input";
 import Joi from "joi-browser";
 
 class LoginForm extends Form {
@@ -19,42 +18,22 @@ class LoginForm extends Form {
   };
 
   render() {
-    const { data: account } = this.state;
-
-    const inputFields = [
-      { name: "username", type: "text", label: "Username" },
-      { name: "password", type: "password", label: "Password" },
-    ];
-
     return (
-      <form className="mt-2">
-        {inputFields.map((field) => {
-          return (
-            <Input
-              name={field.name}
-              type={field.type}
-              label={field.label}
-              id={field.name}
-              value={account[field.name]}
-              placeholder={`Please enter your ${field.label}`}
-              onChange={this.handleChange}
-            />
-          );
-        })}
-        <div className="form-check">
-          <input type="checkbox" className="form-check-input" id="keepLog" />
-          <label className="form-check-label" for="keepLog">
-            Keep me logged in
-          </label>
-        </div>
-        <button
-          type="submit"
-          className="btn btn-primary d-block m-auto w-25 p-3 rounded showDetails"
-          disabled={this.validate()}
-        >
-          Submit
-        </button>
-      </form>
+      <div className="container">
+        <h1>Login</h1>
+        <form className="mt-2">
+          {this.renderInput("username", "Username", "text")}
+          {this.renderInput("password", "Password", "password")}
+
+          <div className="form-check">
+            <input type="checkbox" className="form-check-input" id="keepLog" />
+            <label className="form-check-label" for="keepLog">
+              Keep me logged in
+            </label>
+          </div>
+          {this.renderButton("Submit")}
+        </form>
+      </div>
     );
   }
 }

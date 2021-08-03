@@ -7,6 +7,7 @@ import NotFound from "./common/notFound";
 import Rentals from "./movies/rentals";
 import MovieForm from "./movies/movieForm";
 import LoginForm from "./movies/loginForm";
+import RegisterForm from "./movies/registerForm";
 
 class App extends Component {
   navBarLinks = [
@@ -15,6 +16,7 @@ class App extends Component {
     { title: "Customers", path: "/customers" },
     { title: "Rentals", path: "/rentals" },
     { title: "Login", path: "/login" },
+    { title: "Register", path: "/register" },
   ];
 
   render() {
@@ -24,11 +26,12 @@ class App extends Component {
         <div className="content">
           <Switch>
             <Route path="/login" component={LoginForm} />
+            <Route path="/register" component={RegisterForm} />
+            <Route path="/movies/new" component={MovieForm} />
             <Route path="/movies/:id" component={MovieForm} />
             <Route path="/movies" component={Movies} />
             <Route path="/customers" component={Customers} />
             <Route path="/rentals" component={Rentals} />
-
             <Route path="/not-found" component={NotFound} />
             <Redirect from="/" to="/movies" exact />
             <Redirect to="/not-found" />

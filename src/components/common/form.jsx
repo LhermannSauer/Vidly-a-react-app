@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Input from "../common/input";
 import Joi from "joi-browser";
 
 class Form extends Component {
@@ -50,12 +51,40 @@ class Form extends Component {
     return (
       <button
         type="submit"
-        className="btn btn-primary d-block m-auto w-25 p-3 rounded showDetails
-          
-          "
+        className="btn btn-primary d-block m-auto w-25 p-3 rounded showDetails"
+        disabled={this.validate()}
       >
         {label}
       </button>
+    );
+  }
+
+  renderInput(name, label, type = "text") {
+    const { data, errors } = this.state;
+    return (
+      <Input
+        name={name}
+        type={type}
+        label={label}
+        id={name}
+        value={data[name]}
+        placeholder={`${label}`}
+        onChange={this.handleChange}
+        error={errors && errors[name]}
+      />
+    );
+  }
+
+  renderOption(options, label, name, value = "") {
+    return (
+      <React.Fragment>
+        <label htmlFor={name}>{label}</label>
+        <select className="form-control" id={name} name={name} value={value}>
+          {options.map((o) => {
+            return <option value={o._id}>{o["name"]}</option>;
+          })}
+        </select>
+      </React.Fragment>
     );
   }
 }

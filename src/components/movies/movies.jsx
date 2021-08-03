@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { paginate } from "../../utils/paginate";
-import { getMovies } from "../../fakeMovieService";
+import { getMovies, saveMovie } from "../../fakeMovieService";
 import { getGenres } from "../../fakeGenreService";
 import Table from "../common/table";
 import Pagination from "../common/pagination";
@@ -175,7 +175,9 @@ class Movies extends Component {
         </div>
         <div className=" col-7">
           <p>Showing {filteredMovies.length} movies in the database</p>
-
+          <Link to={`/movies/new?`}>
+            <button className="btn-primary btn">New Movie</button>
+          </Link>
           <Table
             data={table}
             sortColumn={sortColumn}
