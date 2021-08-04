@@ -27,6 +27,7 @@ class Form extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
+    console.log('HANDLE SUBMIT')
 
     const errors = this.validate();
     this.setState({ errors: errors || {} });
@@ -79,7 +80,13 @@ class Form extends Component {
     return (
       <React.Fragment>
         <label htmlFor={name}>{label}</label>
-        <select className="form-control" id={name} name={name} value={value}>
+        <select
+          className="form-control"
+          id={name}
+          name={name}
+          value={value}
+          onChange={this.handleChange}
+        >
           {options.map((o) => {
             return <option value={o._id}>{o["name"]}</option>;
           })}

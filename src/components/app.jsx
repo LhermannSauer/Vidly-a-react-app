@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
+import { getMovies } from "../fakeMovieService";
 import NavBar from "./common/navBar";
 import Movies from "./movies/movies";
 import Customers from "./movies/customers";
@@ -8,8 +9,13 @@ import Rentals from "./movies/rentals";
 import MovieForm from "./movies/movieForm";
 import LoginForm from "./movies/loginForm";
 import RegisterForm from "./movies/registerForm";
+import { saveMovie } from "./../fakeMovieService";
 
 class App extends Component {
+  state = {
+    movies: [],
+  };
+
   navBarLinks = [
     { title: "Vidly", path: "/" },
     { title: "Movies", path: "/movies" },
@@ -19,6 +25,22 @@ class App extends Component {
     { title: "Register", path: "/register" },
   ];
 
+  componentDidMount() {
+    this.setState({
+      movies: getMovies().map((m) => {
+        m["isLiked"] = false;
+        return m;
+      }),
+    });
+  }
+
+  handleSaveMovie = (movie) => {
+    console.log("HANDLE SAVE MOVIE", movie);
+    let movies = [...this.state.movies];
+    saveMovie(movies, movie);
+    this.setState({ movies });
+  };
+
   render() {
     return (
       <div>
@@ -27,9 +49,24 @@ class App extends Component {
           <Switch>
             <Route path="/login" component={LoginForm} />
             <Route path="/register" component={RegisterForm} />
-            <Route path="/movies/new" component={MovieForm} />
-            <Route path="/movies/:id" component={MovieForm} />
-            <Route path="/movies" component={Movies} />
+            <Route
+              path="/movies/new"
+              render={(props) => (
+                <MovieForm onSubmit={this.saveMovie} {...props} />
+              )}
+            />
+            <Route
+              path="/movies/:id"
+              render={(props) => (
+                <MovieForm onSubmit={this.saveMovie} {...props} />
+              )}
+            />
+            <Route
+              path="/movies"
+              render={(props) => (
+                <Movies movies={this.state.movies} {...props} />
+              )}
+            />
             <Route path="/customers" component={Customers} />
             <Route path="/rentals" component={Rentals} />
             <Route path="/not-found" component={NotFound} />

@@ -74,6 +74,7 @@ class Movies extends Component {
   ];
   componentDidMount() {
     const genres = [{ _id: "", name: "All Genres" }, ...getGenres()];
+    let movies = [...this.props.movies];
     this.setState({
       movies: getMovies().map((m) => {
         m["isLiked"] = false;

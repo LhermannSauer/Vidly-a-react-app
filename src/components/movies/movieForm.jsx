@@ -49,12 +49,14 @@ class MovieForm extends Form {
   };
 
   doSubmit = () => {
+    console.log("ON SUBMIT");
     // add new movie to the state of movies
-    saveMovie(this.state.data);
+    this.props.history.push("/movies")
+    this.props.onSubmit(this.state.data);
   };
 
   render() {
-    const { match, history } = this.props;
+    const { match } = this.props;
     return (
       <div>
         <h1>Movie Form: {match.params.id}</h1>
@@ -71,9 +73,8 @@ class MovieForm extends Form {
 
           <button
             className="btn-primary rounded border-0"
-            type="submit"
+            onClick="submit"
             //disabled={this.validate()}
-            onClick={() => history.push("/movies")}
           >
             Save
           </button>
