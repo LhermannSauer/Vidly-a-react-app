@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Input from "../common/input";
 import Joi from "joi-browser";
+import Select from "./select";
 
 class Form extends Component {
   state = {
@@ -27,7 +28,7 @@ class Form extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log('HANDLE SUBMIT')
+    console.log("HANDLE SUBMIT");
 
     const errors = this.validate();
     this.setState({ errors: errors || {} });
@@ -76,22 +77,17 @@ class Form extends Component {
     );
   }
 
-  renderOption(options, label, name, value = "") {
+  renderOption(name, label, options) {
+    const { data } = this.state;
     return (
-      <React.Fragment>
-        <label htmlFor={name}>{label}</label>
-        <select
-          className="form-control"
-          id={name}
-          name={name}
-          value={value}
-          onChange={this.handleChange}
-        >
-          {options.map((o) => {
-            return <option value={o._id}>{o["name"]}</option>;
-          })}
-        </select>
-      </React.Fragment>
+      <Select
+        name={name}
+        value={data[name]}
+        label={label}
+        options={options}
+        onChange={this.handleChange}
+        //        error={errors[name]}
+      />
     );
   }
 }

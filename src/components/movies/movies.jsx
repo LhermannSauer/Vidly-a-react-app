@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { paginate } from "../../utils/paginate";
-import { getMovies, saveMovie } from "../../fakeMovieService";
+import { getMovies } from "../../fakeMovieService";
 import { getGenres } from "../../fakeGenreService";
 import Table from "../common/table";
 import Pagination from "../common/pagination";
 import ListGroup from "../common/listGroup";
 import LikeButton from "../common/like";
 import _ from "lodash";
+import SearchBar from "../common/searchBar";
 
 class Movies extends Component {
   state = {
@@ -72,9 +73,10 @@ class Movies extends Component {
     { title: "Customers", path: "/customers" },
     { title: "Rental", path: "/rental" },
   ];
+
   componentDidMount() {
     const genres = [{ _id: "", name: "All Genres" }, ...getGenres()];
-    let movies = [...this.props.movies];
+
     this.setState({
       movies: getMovies().map((m) => {
         m["isLiked"] = false;
@@ -128,6 +130,15 @@ class Movies extends Component {
     this.setState({ sortColumn });
   };
 
+  handleSearch = (search) => {
+    console.log(search);
+    let movies = [...this.state.movies];
+    movies = movies.filter((m) =>
+      m.title.toLowerCase().startsWith(search.toLowerCase())
+    );
+    this.setState({ movies });
+  };
+
   getMoviesShown = () => {
     return this.state.moviesShown;
   };
@@ -175,10 +186,11 @@ class Movies extends Component {
           />
         </div>
         <div className=" col-7">
-          <p>Showing {filteredMovies.length} movies in the database</p>
-          <Link to={`/movies/new?`}>
-            <button className="btn-primary btn">New Movie</button>
+          <Link className="btn-primary btn mb-3" to={`/movies/new`}>
+            New Movie
           </Link>
+          <p>Showing {filteredMovies.length} movies in the database</p>
+          <SearchBar onSearch={this.handleSearch} />
           <Table
             data={table}
             sortColumn={sortColumn}
