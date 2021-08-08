@@ -6,8 +6,10 @@ import Customers from "./movies/customers";
 import NotFound from "./common/notFound";
 import Rentals from "./movies/rentals";
 import MovieForm from "./movies/movieForm";
+import { ToastContainer } from "react-toastify";
 import LoginForm from "./movies/loginForm";
 import RegisterForm from "./movies/registerForm";
+import "react-toastify/dist/ReactToastify.css";
 
 class App extends Component {
   navBarLinks = [
@@ -22,6 +24,7 @@ class App extends Component {
   render() {
     return (
       <div>
+        <ToastContainer />
         <NavBar links={this.navBarLinks} />
         <div className="content">
           <Switch>

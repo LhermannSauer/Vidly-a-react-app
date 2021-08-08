@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { paginate } from "../../utils/paginate";
-import { getMovies } from "../../fakeMovieService";
-import { getGenres } from "../../fakeGenreService";
+import movieService from "../services/movieService";
+import { getGenres } from "../services/genreService";
 import Table from "../common/table";
 import Pagination from "../common/pagination";
 import ListGroup from "../common/listGroup";
@@ -15,6 +16,7 @@ class Movies extends Component {
     movies: [],
     MOVIESPERPAGE: 4,
     currentPage: 1,
+    searchTerm: "",
     genres: [],
     selectedGenre: null,
     sortColumn: { path: "title", order: "asc" },
@@ -74,11 +76,12 @@ class Movies extends Component {
     { title: "Rental", path: "/rental" },
   ];
 
-  componentDidMount() {
-    const genres = [{ _id: "", name: "All Genres" }, ...getGenres()];
+  async componentDidMount() {
+    const genres = [{ _id: "", name: "All Genres" }, ...(await getGenres())];
+    let movies = await movieService.getMovies();
 
     this.setState({
-      movies: getMovies().map((m) => {
+      movies: movies.map((m) => {
         m["isLiked"] = false;
         return m;
       }),
@@ -86,9 +89,19 @@ class Movies extends Component {
     });
   }
 
-  handleDelete = (movie) => {
-    const movies = this.state.movies.filter((m) => m._id !== movie._id);
+  handleDelete = async (movie) => {
+    const originalMovies = this.state.movies;
+    const movies = originalMovies.filter((m) => m._id !== movie._id);
     this.setState({ movies });
+
+    try {
+      await movieService.deleteMovie(movie);
+    } catch (e) {
+      if (e.response && e.response.status === 404) {
+        toast.error("This movie has already been deleted");
+      }
+      this.setState({ movies: originalMovies });
+    }
   };
 
   handleIncrease = (movie) => {
@@ -123,7 +136,7 @@ class Movies extends Component {
   };
 
   handleFilter = (genre) => {
-    this.setState({ selectedGenre: genre, currentPage: 1 });
+    this.setState({ selectedGenre: genre, currentPage: 1, searchTerm: "" });
   };
 
   handleSort = (sortColumn) => {
@@ -131,12 +144,10 @@ class Movies extends Component {
   };
 
   handleSearch = (search) => {
-    console.log(search);
-    let movies = [...this.state.movies];
-    movies = movies.filter((m) =>
-      m.title.toLowerCase().startsWith(search.toLowerCase())
-    );
-    this.setState({ movies });
+    let searchTerm = this.state.searchTerm;
+    searchTerm = search;
+    let selectedGenre = null;
+    this.setState({ searchTerm, selectedGenre });
   };
 
   getMoviesShown = () => {
@@ -155,16 +166,26 @@ class Movies extends Component {
 
   render() {
     let { length: count } = this.state.movies;
-    let currentPage = this.state.currentPage;
-    let MOVIESPERPAGE = this.state.MOVIESPERPAGE;
-    let selectedGenre = this.state.selectedGenre;
-    let allMovies = this.state.movies;
-    let sortColumn = this.state.sortColumn;
+    let {
+      currentPage,
+      MOVIESPERPAGE,
+      selectedGenre,
+      movies,
+      sortColumn,
+      searchTerm,
+    } = this.state;
 
     let filteredMovies =
       selectedGenre && selectedGenre._id
-        ? allMovies.filter((movie) => movie.genre._id === selectedGenre._id)
-        : allMovies;
+        ? movies.filter((movie) => movie.genre._id === selectedGenre._id)
+        : movies.filter((movie) =>
+            movie.title.toLowerCase().startsWith(searchTerm.toLowerCase())
+          );
+
+    count =
+      selectedGenre && selectedGenre._id
+        ? movies.filter((movie) => movie.genre._id === selectedGenre._id).length
+        : movies.length;
 
     filteredMovies = _.orderBy(
       filteredMovies,

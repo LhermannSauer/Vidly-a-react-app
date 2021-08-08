@@ -1,10 +1,12 @@
 import React from "react";
 import Form from "../common/form";
 import Joi from "joi-browser";
+import * as authService from "../services/authService";
 
 class LoginForm extends Form {
   state = {
     data: { username: "", password: "" },
+    errors: {},
   };
 
   schema = {
@@ -12,25 +14,30 @@ class LoginForm extends Form {
     password: Joi.string().required().label("Password"),
   };
 
-  doSubmit = () => {
-    //Call the server
-    console.log("Submitted");
+  doSubmit = async () => {
+    try {
+      const { data } = this.state;
+      const jwt = await authService.login(data.username, data.password);
+      console.log(jwt);
+      localStorage.setItem("token", jwt);
+      this.props.history.push("/");
+    } catch (e) {
+      if (e.response && e.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.username = e.response.data;
+        this.setState({ errors });
+      }
+    }
   };
 
   render() {
     return (
       <div className="container">
         <h1>Login</h1>
-        <form className="mt-2">
+        <form onSubmit={this.handleSubmit} className="mt-2">
           {this.renderInput("username", "Username", "text")}
           {this.renderInput("password", "Password", "password")}
 
-          <div className="form-check">
-            <input type="checkbox" className="form-check-input" id="keepLog" />
-            <label className="form-check-label" for="keepLog">
-              Keep me logged in
-            </label>
-          </div>
           {this.renderButton("Submit")}
         </form>
       </div>

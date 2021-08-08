@@ -22,6 +22,7 @@ class SearchBar extends Component {
           placeholder="Search..."
           aria-label="Search"
           onChange={this.handleChange}
+          onBlur={() => this.setState({ search: "" })}
         />
       </form>
     );

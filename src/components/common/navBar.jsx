@@ -16,7 +16,7 @@ class NavBar extends Component {
           <div className="navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               {links.map((l) => (
-                <li className="nav-item">
+                <li key={l.title} className="nav-item">
                   <NavLink
                     className="nav-link active"
                     aria-current="page"
