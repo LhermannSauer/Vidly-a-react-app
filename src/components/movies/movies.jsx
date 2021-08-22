@@ -47,33 +47,39 @@ class Movies extends Component {
         <div className="m-auto w-75 h-">
           <button
             onClick={() => this.handleIncrease(movie)}
-            className="btn p-1 w-50 h-25"
+            className={
+              this.props.user && this.props.user.isAdmin
+                ? "btn p-1 w-50 h-25"
+                : "d-none"
+            }
+            disabled={movie.numberInStock >= 100 ? "disabled" : ""}
           >
             +
           </button>
           <button
             onClick={() => this.handleDecrement(movie)}
-            className="btn p-1 btn-dark w-50 h-25"
+            className={
+              this.props.user && this.props.user.isAdmin
+                ? "btn p-1 btn-dark w-50 h-25"
+                : "d-none"
+            }
             disabled={movie.numberInStock === 0 ? "disabled" : ""}
           >
             -
           </button>
           <button
             onClick={() => this.handleDelete(movie)}
-            className="btn btn-block my-1 btn-danger w-100 h-25"
+            className={
+              this.props.user && this.props.user.isAdmin
+                ? "btn btn-block my-1 btn-danger w-100 h-25"
+                : "d-none"
+            }
           >
             Delete
           </button>
         </div>
       ),
     },
-  ];
-
-  navBarLinks = [
-    { title: "Vidly", path: "/" },
-    { title: "Movies", path: "/movies" },
-    { title: "Customers", path: "/customers" },
-    { title: "Rental", path: "/rental" },
   ];
 
   async componentDidMount() {
@@ -104,22 +110,32 @@ class Movies extends Component {
     }
   };
 
-  handleIncrease = (movie) => {
-    let movies = [...this.state.movies];
-    let index = movies.indexOf(movie);
-    movies[index].numberInStock++;
-    this.setState({
-      movies,
-    });
+  handleIncrease = async (movie) => {
+    const originalMovies = this.state.movies;
+    const movies = [...originalMovies];
+    const movieInDB = movies.find((e) => e._id === movie._id);
+    movieInDB.numberInStock++;
+    this.setState({ movies });
+
+    try {
+      await movieService.increaseStock(movie);
+    } catch (e) {
+      this.setState({ originalMovies });
+    }
   };
 
-  handleDecrement = (movie) => {
-    let movies = [...this.state.movies];
-    let index = movies.indexOf(movie);
-    movies[index].numberInStock--;
-    this.setState({
-      movies,
-    });
+  handleDecrement = async (movie) => {
+    const originalMovies = this.state.movies;
+    const movies = [...originalMovies];
+    const movieInDB = movies.find((e) => e._id === movie._id);
+    movieInDB.numberInStock--;
+    this.setState({ movies });
+
+    try {
+      await movieService.decreaseStock(movie);
+    } catch (e) {
+      this.setState({ originalMovies });
+    }
   };
 
   handleLike = (movie) => {
@@ -166,7 +182,7 @@ class Movies extends Component {
 
   render() {
     let { length: count } = this.state.movies;
-    let {
+    const {
       currentPage,
       MOVIESPERPAGE,
       selectedGenre,
@@ -174,6 +190,7 @@ class Movies extends Component {
       sortColumn,
       searchTerm,
     } = this.state;
+    const { user } = this.props;
 
     let filteredMovies =
       selectedGenre && selectedGenre._id
@@ -207,9 +224,11 @@ class Movies extends Component {
           />
         </div>
         <div className=" col-7">
-          <Link className="btn-primary btn mb-3" to={`/movies/new`}>
-            New Movie
-          </Link>
+          {user && (
+            <Link className="btn-primary btn mb-3" to={`/movies/new`}>
+              New Movie
+            </Link>
+          )}
           <p>Showing {filteredMovies.length} movies in the database</p>
           <SearchBar onSearch={this.handleSearch} />
           <Table

@@ -22,6 +22,7 @@ async function saveMovie(movie) {
   if (movie._id) {
     let movieEntry = { ...movie };
     delete movieEntry._id;
+    console.log(movieEntry);
     return http.put(movieUrl(movie._id), movieEntry);
   }
 
@@ -32,4 +33,30 @@ async function deleteMovie(movie) {
   await http.delete(movieUrl(movie._id));
 }
 
-export default { getMovies, getMovie, saveMovie, deleteMovie };
+async function increaseStock(movie) {
+  const movieInDB = await getMovie(movie._id);
+  movieInDB.numberInStock++;
+  movieInDB.genreId = movieInDB.genre._id;
+  delete movieInDB._id;
+  delete movieInDB.genre;
+  console.log(movieInDB);
+  await http.put(movieUrl(movie._id), movieInDB);
+}
+
+async function decreaseStock(movie) {
+  const movieInDB = await getMovie(movie._id);
+  movieInDB.numberInStock--;
+  movieInDB.genreId = movieInDB.genre._id;
+  delete movieInDB._id;
+  delete movieInDB.genre;
+  console.log(movieInDB);
+  await http.put(movieUrl(movie._id), movieInDB);
+}
+export default {
+  getMovies,
+  getMovie,
+  saveMovie,
+  deleteMovie,
+  increaseStock,
+  decreaseStock,
+};
